@@ -33,3 +33,7 @@ android {
     warning 'InvalidPackage'
   }
 }
+
+dependencies {
+  implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+}

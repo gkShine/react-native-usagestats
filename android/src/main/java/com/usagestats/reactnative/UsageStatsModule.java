@@ -9,15 +9,13 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableArray;
 
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-
-import androidx.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,9 +26,7 @@ import java.util.HashMap;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.ArrayUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class UsageStatsModule extends ReactContextBaseJavaModule {
 
     private static final String DURATION_SHORT_KEY = "SHORT";
@@ -105,11 +101,16 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getStats(int durationInDays, final ReadableArray excludes, final Promise promise) {
-        Object[] objectArray = ArrayUtil.toArray(excludes);
-        String[] stringArray = Arrays.copyOf(objectArray, objectArray.length, String[].class);
         if (durationInDays > 0) {
             try {
-                JSONArray stats = getStatsJSON(getAggregateStatsMap(getReactApplicationContext(), durationInDays), stringArray);
+                ArrayList<String> list = new ArrayList<>();
+                if (excludes != null && excludes.size() != 0) {
+                    for (int i = 0; i < excludes.size(); i++) {
+                        String exclude = excludes.getString(i);
+                        list.add(exclude);
+                    }
+                }
+                JSONArray stats = getStatsJSON(getAggregateStatsMap(getReactApplicationContext(), durationInDays), list);
 
                 // List dates = getDates(durationInDays);
                 promise.resolve(stats.toString());
@@ -140,7 +141,6 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @ReactMethod
     public void checkPermission(final Promise promise) {
         try {
