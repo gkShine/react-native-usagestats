@@ -152,12 +152,13 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void requestPermission() {
+    public void requestPermission(final Promise promise) {
         try {
             ReactApplicationContext context = getReactApplicationContext();
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
+            promise.resolve("success");
         } catch (Exception e) {
             promise.reject(e);
         }
