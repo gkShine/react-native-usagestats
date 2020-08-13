@@ -29,8 +29,6 @@ import java.util.ArrayList;
 
 public class UsageStatsModule extends ReactContextBaseJavaModule {
 
-    private static final String DURATION_SHORT_KEY = "SHORT";
-    private static final String DURATION_LONG_KEY = "LONG";
     private Map<String, UsageStats> aggregateStats;
 
     UsageStatsModule(ReactApplicationContext reactContext) {
@@ -40,15 +38,6 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "UsageStats";
-    }
-
-    @Override
-    public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<>();
-        // TODO: Add any necessary constants to the module here
-        constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
-        constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
-        return constants;
     }
 
     private static List getDates(int durationInDays) {
@@ -111,8 +100,6 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
                     }
                 }
                 JSONArray stats = getStatsJSON(getAggregateStatsMap(getReactApplicationContext(), durationInDays), list);
-
-                // List dates = getDates(durationInDays);
                 promise.resolve(stats.toString());
             } catch (Exception e) {
                 promise.reject(e);
@@ -166,9 +153,13 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void requestPermission() {
-      ReactApplicationContext context = getReactApplicationContext();
-      Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      context.startActivity(intent);
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 }
